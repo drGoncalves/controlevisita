@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Check‑In Vendedor</title>
+</head>
+<body>
+  <h2>Coletando localização e hora...</h2>
+  <script>
+    // Link base do seu formulário
+    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSf8Yp3qQRgKrsoiJ4AwY8nQ1Mfg27-LkJzwoEpBuK3lX0yOMg/viewform";
+    const CHECKIN_FIELD = "entry.1901237927";   // Check‑In/Check‑Out
+    const LAT_FIELD = "entry.724191734";        // Latitude
+    const LON_FIELD = "entry.711760265";        // Longitude
+    // const DATETIME_FIELD = "entry.0000000000"; // Opcional — caso adicione campo de data/hora
+
+    function redirectWithParams(lat, lon) {
+      const nowISO = new Date().toISOString();
+      let url = `${FORM_URL}?${CHECKIN_FIELD}=Check-In`;
+      url += `&${LAT_FIELD}=${lat}`;
+      url += `&${LON_FIELD}=${lon}`;
+      // url += `&${DATETIME_FIELD}=${encodeURIComponent(nowISO)}`; // descomente se usar data/hora
+      window.location.href = url;
+    }
+
+    function errorHandler() {
+      alert("Não foi possível obter sua localização. Verifique as permissões do navegador.");
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          redirectWithParams(position.coords.latitude, position.coords.longitude);
+        },
+        errorHandler,
+        { enableHighAccuracy: true }
+      );
+    } else {
+      alert("Seu navegador não suporta geolocalização.");
+    }
+  </script>
+</body>
+</html>
