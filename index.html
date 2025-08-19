@@ -2,93 +2,58 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Check-In / Check-Out</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    form { max-width: 400px; margin: auto; }
-    label { display: block; margin-top: 15px; font-weight: bold; }
-    button { margin-top: 20px; padding: 10px; font-size: 16px; width: 100%; }
-  </style>
+  <title>Check-in / Check-out</title>
 </head>
 <body>
-  <h2>Registro de Check-In / Check-Out</h2>
-  <form id="form">
-    <label>Nome:</label>
-    <input type="text" id="nome" required>
-
-    <label>Cliente:</label>
-    <input type="text" id="cliente" required>
-
-    <label>Ação:</label>
-    <input type="radio" name="tipo" value="Check-In" required> Check-In
-    <input type="radio" name="tipo" value="Check-Out"> Check-Out
-
-    <button type="submit" id="enviarBtn">Enviar</button>
+  <h2>Registro de Ponto(v1)</h2>
+  <form id="checkForm">
+    <label>Nome: <input type="text" name="nome" required></label><br><br>
+    <label>Cliente: <input type="text" name="cliente" required></label><br><br>
+    <label>
+      <input type="radio" name="tipo" value="Check-In" required> Check-In
+    </label>
+    <label>
+      <input type="radio" name="tipo" value="Check-Out" required> Check-Out
+    </label><br><br>
+    <button type="submit" id="btnEnviar">Enviar</button>
   </form>
 
-  <p id="msg"></p>
+  <p id="status"></p>
 
   <script>
     const webAppUrl = "https://script.google.com/macros/s/AKfycbxuy6zM1fqVjt2DQ2gc1zlNKEycy2DTmaTCu6lgu2mghHlxrSx192Mg9KCTqDE9wroHvg/exec";
 
-    document.getElementById("form").addEventListener("submit", function(e) {
+    document.getElementById("checkForm").addEventListener("submit", function(e) {
       e.preventDefault();
-
-      const nome = document.getElementById("nome").value;
-      const cliente = document.getElementById("cliente").value;
-      const tipo = document.querySelector("input[name='tipo']:checked").value;
-      const btn = document.getElementById("enviarBtn");
-      const msg = document.getElementById("msg");
-
+      const btn = document.getElementById("btnEnviar");
       btn.disabled = true;
       btn.innerText = "Enviando...";
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          const dados = {
-            nome,
-            cliente,
-            tipo,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          };
+      navigator.geolocation.getCurrentPosition(pos => {
+        const data = {
+          nome: this.nome.value,
+          cliente: this.cliente.value,
+          tipo: this.tipo.value,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude
+        };
 
-          fetch(webAppUrl, {
-            method: "POST",
-            body: JSON.stringify(dados),
-            headers: { "Content-Type": "application/json" }
-          })
-          .then(r => r.json())
-          .then(res => {
-            if (res.status === "success") {
-              msg.innerText = "Registro enviado com sucesso!";
-              msg.style.color = "green";
-            } else {
-              msg.innerText = "Erro: " + res.message;
-              msg.style.color = "red";
-              btn.disabled = false;
-              btn.innerText = "Enviar";
-            }
-          })
-          .catch(err => {
-            msg.innerText = "Falha na conexão: " + err;
-            msg.style.color = "red";
-            btn.disabled = false;
-            btn.innerText = "Enviar";
-          });
-
-        }, function(error) {
-          msg.innerText = "Erro ao obter localização.";
-          msg.style.color = "red";
-          btn.disabled = false;
-          btn.innerText = "Enviar";
+        fetch(webAppUrl, {
+          method: "POST",
+          mode: "no-cors", // evita erro CORS
+          body: JSON.stringify(data)
+        })
+        .then(() => {
+          document.getElementById("status").innerText = "✅ Registro enviado!";
+        })
+        .catch(err => {
+          document.getElementById("status").innerText = "❌ Erro: " + err;
         });
-      } else {
-        msg.innerText = "Geolocalização não suportada no navegador.";
-        msg.style.color = "red";
+      }, err => {
+        document.getElementById("status").innerText = "Erro ao pegar localização.";
         btn.disabled = false;
         btn.innerText = "Enviar";
-      }
+      });
     });
   </script>
 </body>
