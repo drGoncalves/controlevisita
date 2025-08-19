@@ -3,53 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <title>Check-in / Check-out</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 90%;
+      max-width: 400px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       text-align: center;
-      padding: 30px;
-      background: #f9f9f9;
     }
     h2 {
-      color: #333;
-    }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: inline-block;
+      color: #007bff;
+      margin-bottom: 20px;
     }
     label {
       display: block;
-      margin: 10px 0;
-      font-size: 16px;
       text-align: left;
-    }
-    input, button {
-      font-size: 16px;
-      padding: 10px;
-      margin-top: 5px;
-      width: 100%;
-    }
-    .checkboxes {
-      text-align: left;
-      margin: 15px 0;
-    }
-    .checkboxes label {
-      display: inline-block;
-      margin-right: 20px;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      margin-top: 15px;
       font-weight: bold;
     }
-    button:hover {
-      background: #0056b3;
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    .options {
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-around;
+    }
+    .options button {
+      flex: 1;
+      margin: 0 8px;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      color: #fff;
+    }
+    .options button:hover {
+      transform: scale(1.05);
+    }
+    .checkin {
+      background: #28a745;
+    }
+    .checkout {
+      background: #dc3545;
     }
     #status {
       margin-top: 20px;
@@ -59,39 +76,35 @@
   </style>
 </head>
 <body>
-  <h2>Registro de Ponto</h2>
-  <form id="checkForm">
-    <label>Nome:
-      <input type="text" id="nome" required>
-    </label>
-    <label>Cliente:
-      <input type="text" id="cliente" required>
-    </label>
+  <div class="container">
+    <h2>Registro de Ponto</h2>
+    <form id="checkForm">
+      <label>Nome:
+        <input type="text" id="nome" required>
+      </label>
+      <label>Cliente:
+        <input type="text" id="cliente" required>
+      </label>
 
-    <div class="checkboxes">
-      <label><input type="radio" name="tipo" value="Check-In" required> Check-In</label>
-      <label><input type="radio" name="tipo" value="Check-Out" required> Check-Out</label>
-    </div>
+      <div class="options">
+        <button type="button" class="checkin" onclick="enviarRegistro('Check-In')">Check-In</button>
+        <button type="button" class="checkout" onclick="enviarRegistro('Check-Out')">Check-Out</button>
+      </div>
+    </form>
 
-    <button type="submit">Salvar Registro</button>
-  </form>
-
-  <p id="status"></p>
+    <p id="status"></p>
+  </div>
 
   <script>
-    const webAppUrl = "COLE_AQUI_A_URL_DO_SEU_WEB_APP"; // <- substitua aqui
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbxuy6zM1fqVjt2DQ2gc1zlNKEycy2DTmaTCu6lgu2mghHlxrSx192Mg9KCTqDE9wroHvg/exec"; // substitua pela URL do Apps Script
 
-    document.getElementById("checkForm").addEventListener("submit", function(e){
-      e.preventDefault();
-
+    function enviarRegistro(tipo) {
       if (!navigator.geolocation) {
         alert("Seu navegador não suporta geolocalização.");
         return;
       }
 
       navigator.geolocation.getCurrentPosition(function(position){
-        const tipo = document.querySelector("input[name='tipo']:checked").value;
-
         const data = {
           nome: document.getElementById("nome").value,
           cliente: document.getElementById("cliente").value,
@@ -107,7 +120,7 @@
         .then(res => res.json())
         .then(response => {
           if(response.status === "success") {
-            document.getElementById("status").innerText = "✅ Registro salvo com sucesso!";
+            document.getElementById("status").innerText = "✅ " + tipo + " salvo com sucesso!";
             document.getElementById("checkForm").reset();
           } else {
             document.getElementById("status").innerText = "❌ Erro: " + response.message;
@@ -119,7 +132,7 @@
       }, function(err){
         alert("Erro ao capturar localização: " + err.message);
       });
-    });
+    }
   </script>
 </body>
 </html>
