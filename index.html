@@ -2,12 +2,46 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Abrir Web App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f8ff;
+      color: #333;
+      text-align: center;
+    }
+    a.button {
+      display: inline-block;
+      padding: 12px 24px;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #1a73e8;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+    a.button:hover {
+      background-color: #1669c1;
+    }
+  </style>
 </head>
 <body>
-  <p>Para acessar o Web App do Google, clique no botão abaixo:</p>
-  <a href="https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec" target="_blank">
+  <h1>Bem-vindo!</h1>
+  <p>Clique no botão abaixo para abrir o Web App do Google:</p>
+  <a class="button" href="https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec" target="_blank" rel="noopener noreferrer">
     Abrir Web App
   </a>
+  <p>Se o botão não funcionar, copie e cole este link no navegador:</p>
+  <p><a href="https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec" target="_blank" rel="noopener noreferrer">
+    https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec
+  </a></p>
 </body>
 </html>
