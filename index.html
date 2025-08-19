@@ -42,7 +42,7 @@
     font-size: 16px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
 
@@ -99,6 +99,7 @@
 
 <main>
   <input type="text" id="nome" placeholder="Digite seu nome" required>
+  <input type="text" id="cliente" placeholder="Digite o cliente" required>
 
   <div class="card" id="checkin">
     <i class="fas fa-sign-in-alt icon"></i>Check-in
@@ -112,12 +113,14 @@
 </main>
 
 <script>
-const url = "https://script.google.com/macros/s/AKfycbzinOqCVG_QfCC3AEaxjR9-5NjIiv1pXd9uY4Sv4tG5cIGrxJ16OQuqNH7esub5wL2N/exec";
+const url = "COLE_AQUI_A_URL_DO_WEBAPP";
 
 function enviarDados(tipo) {
   const nome = document.getElementById('nome').value.trim();
-  if (!nome) {
-    document.getElementById('status').innerText = "Por favor, digite seu nome.";
+  const cliente = document.getElementById('cliente').value.trim();
+
+  if (!nome || !cliente) {
+    document.getElementById('status').innerText = "Por favor, preencha Nome e Cliente.";
     return;
   }
 
@@ -129,7 +132,8 @@ function enviarDados(tipo) {
   navigator.geolocation.getCurrentPosition((pos) => {
     const data = {
       nome,
-      tipo,
+      cliente,
+      tipo,       // Check-in ou Check-out
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude
     };
