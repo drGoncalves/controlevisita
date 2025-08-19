@@ -1,78 +1,55 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Check-In / Check-Out</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-    button { margin: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
-    #status { margin-top: 20px; font-weight: bold; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enviar Dados</title>
 </head>
 <body>
-  <h2>📍 Registro de Localização</h2>
-  
-  <input type="text" id="nome" placeholder="Seu nome"><br>
-  <input type="text" id="cliente" placeholder="Cliente"><br>
+<h1>Enviar Dados para Google Sheets</h1>
 
-  <button onclick="registrar('Check-in')">Check-in</button>
-  <button onclick="registrar('Check-out')">Check-out</button>
+<form id="form">
+  <input type="text" id="nome" placeholder="Nome" required><br><br>
+  <input type="text" id="cliente" placeholder="Cliente" required><br><br>
+  <button type="submit">Enviar Localização</button>
+</form>
 
-  <p id="status">⏳ Aguardando ação...</p>
+<p id="status"></p>
 
-  <script>
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyJfO4Mk5xWuHz3xx_V88LtJYoj6kjn0pP9rVdnoGv4b6nCHR-H0aagf8hfcRFOh8R3Tg/exec";
+<script>
+const url = "https://script.google.com/macros/s/AKfycbzinOqCVG_QfCC3AEaxjR9-5NjIiv1pXd9uY4Sv4tG5cIGrxJ16OQuqNH7esub5wL2N/exec";
 
-    function registrar(tipo) {
-      document.getElementById("status").textContent = "📍 Obtendo localização...";
+document.getElementById('form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const nome = document.getElementById('nome').value;
+  const cliente = document.getElementById('cliente').value;
 
-      if (!navigator.geolocation) {
-        document.getElementById("status").textContent = "❌ Geolocalização não suportada!";
-        return;
-      }
+  if (!navigator.geolocation) {
+    document.getElementById('status').innerText = "Geolocalização não suportada.";
+    return;
+  }
 
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
+  navigator.geolocation.getCurrentPosition((pos) => {
+    const data = {
+      nome,
+      cliente,
+      latitude: pos.coords.latitude,
+      longitude: pos.coords.longitude
+    };
 
-          const nome = document.getElementById("nome").value || "Sem nome";
-          const cliente = document.getElementById("cliente").value || "Sem cliente";
-
-          document.getElementById("status").textContent = "⏳ Enviando dados...";
-
-          // Cria o callback único para JSONP
-          const callbackName = "cb_" + Date.now();
-          window[callbackName] = function(response) {
-            console.log("Resposta JSONP:", response);
-            if (response.status === "success") {
-              document.getElementById("status").textContent = "✅ Registro salvo com sucesso!";
-            } else {
-              document.getElementById("status").textContent = "⚠️ Erro ao salvar.";
-            }
-            // Remove o script e callback após execução
-            delete window[callbackName];
-            document.body.removeChild(script);
-          };
-
-          const url = `${WEBAPP_URL}?callback=${callbackName}&nome=${encodeURIComponent(nome)}&cliente=${encodeURIComponent(cliente)}&tipo=${encodeURIComponent(tipo)}&latitude=${lat}&longitude=${lon}`;
-
-          const script = document.createElement("script");
-          script.src = url;
-          script.onerror = () => {
-            document.getElementById("status").textContent = "❌ Falha na requisição!";
-            delete window[callbackName];
-            document.body.removeChild(script);
-          };
-          document.body.appendChild(script);
-        },
-        err => {
-          document.getElementById("status").textContent = "❌ Erro ao obter localização: " + err.message;
-        },
-        { timeout: 10000 } // Timeout de 10s
-      );
-    }
-  </script>
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+      document.getElementById('status').innerText = res.status === "sucesso" ? "Enviado com sucesso!" : "Erro: " + res.message;
+    })
+    .catch(err => document.getElementById('status').innerText = "Erro ao enviar: " + err);
+  }, (err) => {
+    document.getElementById('status').innerText = "Erro ao obter localização: " + err.message;
+  });
+});
+</script>
 </body>
 </html>
