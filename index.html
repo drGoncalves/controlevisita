@@ -5,53 +5,95 @@
   <title>Check-In / Check-Out</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    button { padding: 10px 20px; margin: 10px; border: none; border-radius: 5px; background: #007bff; color: #fff; font-size: 16px; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    #status { margin-top: 20px; font-weight: bold; }
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 20px; 
+      background: #f4f7fa;
+      color: #333;
+    }
+    h2 {
+      color: #007bff;
+    }
+    input {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      max-width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button { 
+      padding: 10px 20px; 
+      margin: 10px 5px 0 0; 
+      border: none; 
+      border-radius: 5px; 
+      background: #007bff; 
+      color: #fff; 
+      font-size: 16px; 
+      cursor: pointer; 
+      transition: background 0.3s;
+    }
+    button:hover { 
+      background: #0056b3; 
+    }
+    #status { 
+      margin-top: 20px; 
+      font-weight: bold; 
+      background: #e9ecef; 
+      padding: 10px; 
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
   <h2>Registro de Ponto</h2>
-  <input type="text" id="nome" placeholder="Seu nome"><br>
-  <input type="text" id="cliente" placeholder="Cliente"><br>
+  <input type="text" id="nome" placeholder="Seu nome">
+  <input type="text" id="cliente" placeholder="Cliente">
   <button onclick="enviar('checkin')">Check-In</button>
   <button onclick="enviar('checkout')">Check-Out</button>
-  <div id="status"></div>
+  <div id="status">Aguardando ação...</div>
 
   <script>
+    // URL do seu Google Apps Script publicado como WebApp
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJfO4Mk5xWuHz3xx_V88LtJYoj6kjn0pP9rVdnoGv4b6nCHR-H0aagf8hfcRFOh8R3Tg/exec";
 
     function enviar(tipo) {
-      const nome = document.getElementById("nome").value;
-      const cliente = document.getElementById("cliente").value;
+      const nome = document.getElementById("nome").value.trim();
+      const cliente = document.getElementById("cliente").value.trim();
+      const statusDiv = document.getElementById("status");
 
       if (!nome || !cliente) {
-        alert("Preencha todos os campos!");
+        alert("⚠️ Preencha todos os campos!");
         return;
       }
 
       if (navigator.geolocation) {
+        statusDiv.innerText = "📍 Obtendo localização...";
+
         navigator.geolocation.getCurrentPosition(pos => {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
 
+          // Nome dinâmico do callback
           const callbackName = "jsonpCallback_" + Date.now();
 
+          // Define callback global
           window[callbackName] = function(response) {
-            document.getElementById("status").innerText = "Resposta: " + JSON.stringify(response);
-            delete window[callbackName];
+            statusDiv.innerText = "✅ Resposta recebida: " + JSON.stringify(response);
+            delete window[callbackName]; // limpa callback
           };
 
+          // Cria a chamada JSONP
           const script = document.createElement("script");
           script.src = `${SCRIPT_URL}?nome=${encodeURIComponent(nome)}&cliente=${encodeURIComponent(cliente)}&tipo=${tipo}&latitude=${lat}&longitude=${lng}&callback=${callbackName}`;
           document.body.appendChild(script);
 
         }, () => {
-          alert("Não foi possível obter sua localização.");
+          statusDiv.innerText = "❌ Não foi possível obter sua localização.";
         });
       } else {
-        alert("Geolocalização não é suportada no seu navegador.");
+        alert("❌ Geolocalização não é suportada no seu navegador.");
       }
     }
   </script>
