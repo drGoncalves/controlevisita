@@ -38,7 +38,7 @@
     <p id="status"></p>
   </div>
 
-  <footer>🌐 WebsssApp: https://script.google.com/macros/s/SEU_WEBAPP/exec</footer>
+  <footer>🌐 WebApp: https://script.google.com/macros/s/SEU_WEBAPP/exec</footer>
 
   <script>
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec";
@@ -46,7 +46,7 @@
     const checkinBtn = document.querySelector(".checkin");
     const checkoutBtn = document.querySelector(".checkout");
 
-    function enviar(tipo){
+    async function enviar(tipo){
       const nome = document.getElementById("nome").value.trim();
       const cliente = document.getElementById("cliente").value.trim();
       if(!nome || !cliente){ 
@@ -56,36 +56,37 @@
 
       checkinBtn.disabled = true;
       checkoutBtn.disabled = true;
+      statusEl.innerHTML = "⏳ Obtendo localização...";
 
       if(!navigator.geolocation){ 
-        alert("Geolocalização não suportada."); 
-        checkinBtn.disabled=false; 
-        checkoutBtn.disabled=false; 
-        return; 
+        statusEl.innerHTML = "❌ Geolocalização não suportada.";
+        checkinBtn.disabled=false;
+        checkoutBtn.disabled=false;
+        return;
       }
 
-      navigator.geolocation.getCurrentPosition(function(pos){
+      navigator.geolocation.getCurrentPosition(async function(pos){
         const data = {
-          nome: nome,
-          cliente: cliente,
-          tipo: tipo,
+          nome,
+          cliente,
+          tipo,
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude
         };
 
-        statusEl.innerText = "⏳ Enviando registro...";
-        statusEl.style.color = "#333";
+        statusEl.innerHTML = "⏳ Enviando registro...";
 
-        fetch(WEBAPP_URL, {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
-        })
-        .then(async response => {
+        try {
+          const response = await fetch(WEBAPP_URL, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json" },
+            mode: "cors"  // ⚡ garante que CORS seja aplicado
+          });
+
           const text = await response.text();
           try {
             const resp = JSON.parse(text);
-
             if(resp.status==="success"){
               statusEl.innerHTML = `✅ Registro enviado com sucesso!<br>Latitude: ${data.latitude}<br>Longitude: ${data.longitude}`;
               statusEl.style.color="green";
@@ -95,21 +96,20 @@
               statusEl.style.color="red";
               console.error("Erro retornado pelo WebApp:", resp);
             }
-          } catch(err){
-            statusEl.innerHTML = `❌ Erro inesperado: ${text}`;
+          } catch(parseErr){
+            statusEl.innerHTML = `❌ Erro inesperado (não JSON): ${text}`;
             statusEl.style.color="red";
             console.error("Erro inesperado (não JSON):", text);
           }
-        })
-        .catch(err=>{
-          statusEl.innerHTML = `❌ Erro ao enviar: ${err.message}`;
+
+        } catch(fetchErr){
+          statusEl.innerHTML = `❌ Erro ao enviar: ${fetchErr.message}<br>Verifique deploy e CORS`;
           statusEl.style.color="red";
-          console.error("Erro ao enviar para o WebApp:", err);
-        })
-        .finally(()=>{ 
-          checkinBtn.disabled=false; 
-          checkoutBtn.disabled=false; 
-        });
+          console.error("Erro ao enviar para o WebApp:", fetchErr);
+        } finally{
+          checkinBtn.disabled=false;
+          checkoutBtn.disabled=false;
+        }
 
       }, function(err){
         statusEl.innerHTML=`❌ Erro ao capturar localização: ${err.message}`;
