@@ -1,126 +1,157 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Check-In / Check-Out</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
-    body{display:flex;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(135deg,#6a11cb,#2575fc);padding:20px;}
-    .container{background:#fff;padding:30px 40px;border-radius:20px;box-shadow:0 15px 40px rgba(0,0,0,0.2);max-width:400px;width:100%;text-align:center;}
-    h2{margin-bottom:25px;color:#2575fc;}
-    label{display:block;text-align:left;margin-bottom:5px;font-weight:600;}
-    input[type=text]{width:100%;padding:12px 15px;margin-bottom:20px;border-radius:10px;border:1px solid #ccc;transition:all 0.3s;}
-    input[type=text]:focus{border-color:#2575fc;outline:none;box-shadow:0 0 8px rgba(37,117,252,0.3);}
-    .options{display:flex;justify-content:space-between;gap:15px;}
-    button{flex:1;padding:12px;border:none;border-radius:12px;font-weight:600;font-size:16px;color:#fff;cursor:pointer;transition:all 0.3s;}
-    button.checkin{background:#28a745;}
-    button.checkout{background:#dc3545;}
-    button:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
-    button.disabled{opacity:0.6;cursor:not-allowed;}
-    #status{margin-top:20px;font-weight:600;word-break:break-word;line-height:1.4;}
-    footer{margin-top:25px;font-size:12px;color:#555;text-align:center;word-break:break-all;}
-    @media(max-width:400px){.options{flex-direction:column;}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-In / Check-Out</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+        body{display:flex;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(135deg,#6a11cb,#2575fc);padding:20px;}
+        .container{background:#fff;padding:30px 40px;border-radius:20px;box-shadow:0 15px 40px rgba(0,0,0,0.2);max-width:400px;width:100%;text-align:center;}
+        h2{margin-bottom:25px;color:#2575fc;}
+        label{display:block;text-align:left;margin-bottom:5px;font-weight:600;}
+        input[type=text]{width:100%;padding:12px 15px;margin-bottom:20px;border-radius:10px;border:1px solid #ccc;transition:all 0.3s;}
+        input[type=text]:focus{border-color:#2575fc;outline:none;box-shadow:0 0 8px rgba(37,117,252,0.3);}
+        .options{display:flex;justify-content:space-between;gap:15px;}
+        button{flex:1;padding:12px;border:none;border-radius:12px;font-weight:600;font-size:16px;color:#fff;cursor:pointer;transition:all 0.3s;}
+        button.checkin{background:#28a745;}
+        button.checkout{background:#dc3545;}
+        button:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+        button.disabled{opacity:0.6;cursor:not-allowed;} /* Estilo para botões desativados */
+        #status{margin-top:20px;font-weight:600;word-break:break-word;line-height:1.4;}
+        footer{margin-top:25px;font-size:12px;color:#555;text-align:center;word-break:break-all;}
+        @media(max-width:400px){.options{flex-direction:column;}}
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>📍 Registro de Visita</h2>
-    <label>Nome:</label>
-    <input type="text" id="nome" placeholder="Seu nome" required>
-    <label>Cliente:</label>
-    <input type="text" id="cliente" placeholder="Nome do cliente" required>
-    <div class="options">
-      <button type="button" class="checkin" onclick="enviar('Check-In')">Check-In</button>
-      <button type="button" class="checkout" onclick="enviar('Check-Out')">Check-Out</button>
+    <div class="container">
+        <h2>📍 Registro de Visita</h2>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" placeholder="Seu nome" required>
+        <label for="cliente">Cliente:</label>
+        <input type="text" id="cliente" placeholder="Nome do cliente" required>
+        <div class="options">
+            <button type="button" class="checkin" onclick="enviar('Check-In')">Check-In</button>
+            <button type="button" class="checkout" onclick="enviar('Check-Out')">Check-Out</button>
+        </div>
+        <p id="status"></p>
     </div>
-    <p id="status"></p>
-  </div>
 
-  <footer>🌐 WebApp:</footer>
+    <footer>🌐 WebApp:</footer>
 
-  <script>
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec";
-    const statusEl = document.getElementById("status");
-    const checkinBtn = document.querySelector(".checkin");
-    const checkoutBtn = document.querySelector(".checkout");
+    <script>
+        // IMPORTANTE: Substitua esta URL pela URL do seu WebApp do Google Apps Script após a implantação.
+        const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec"; 
+        const statusEl = document.getElementById("status");
+        const checkinBtn = document.querySelector(".checkin");
+        const checkoutBtn = document.querySelector(".checkout");
 
-    async function enviar(tipo){
-      const nome = document.getElementById("nome").value.trim();
-      const cliente = document.getElementById("cliente").value.trim();
-      if(!nome || !cliente){ 
-        alert("Preencha Nome e Cliente antes de continuar."); 
-        return; 
-      }
+        /**
+         * Envia dados de check-in/check-out para o WebApp do Google Apps Script.
+         * @param {string} tipo - O tipo de ação: 'Check-In' ou 'Check-Out'.
+         */
+        async function enviar(tipo) {
+            const nome = document.getElementById("nome").value.trim();
+            const cliente = document.getElementById("cliente").value.trim();
 
-      checkinBtn.disabled = true;
-      checkoutBtn.disabled = true;
-      statusEl.innerHTML = "⏳ Obtendo localização...";
-
-      if(!navigator.geolocation){ 
-        statusEl.innerHTML = "❌ Geolocalização não suportada.";
-        checkinBtn.disabled=false;
-        checkoutBtn.disabled=false;
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(async function(pos){
-        const data = {
-          nome,
-          cliente,
-          tipo,
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude
-        };
-
-        statusEl.innerHTML = "⏳ Enviando registro...";
-
-        try {
-          const response = await fetch(WEBAPP_URL, {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: { "Content-Type": "application/json" },
-            mode: "cors"  // ⚡ garante que CORS seja aplicado
-          });
-
-          const text = await response.text();
-          try {
-            const resp = JSON.parse(text);
-            if(resp.status==="success"){
-              statusEl.innerHTML = `✅ Registro enviado com sucesso!<br>Latitude: ${data.latitude}<br>Longitude: ${data.longitude}`;
-              statusEl.style.color="green";
-              console.log("Resposta do WebApp:", resp);
-            } else {
-              statusEl.innerHTML = `❌ Erro do WebApp: ${resp.message}`;
-              statusEl.style.color="red";
-              console.error("Erro retornado pelo WebApp:", resp);
+            // Valida entradas
+            if (!nome || !cliente) {
+                statusEl.innerHTML = "Preencha Nome e Cliente antes de continuar.";
+                statusEl.style.color = "orange"; // Usa laranja para avisos
+                return;
             }
-          } catch(parseErr){
-            statusEl.innerHTML = `❌ Erro inesperado (não JSON): ${text}`;
-            statusEl.style.color="red";
-            console.error("Erro inesperado (não JSON):", text);
-          }
 
-        } catch(fetchErr){
-          statusEl.innerHTML = `❌ Erro ao enviar: ${fetchErr.message}<br>Verifique deploy e CORS`;
-          statusEl.style.color="red";
-          console.error("Erro ao enviar para o WebApp:", fetchErr);
-        } finally{
-          checkinBtn.disabled=false;
-          checkoutBtn.disabled=false;
+            // Desativa botões e adiciona classe 'disabled' para feedback visual
+            checkinBtn.disabled = true;
+            checkoutBtn.disabled = true;
+            checkinBtn.classList.add('disabled');
+            checkoutBtn.classList.add('disabled');
+
+            statusEl.innerHTML = "⏳ Obtendo localização...";
+            statusEl.style.color = ""; // Reseta a cor
+
+            // Verifica se a geolocalização é suportada pelo navegador
+            if (!navigator.geolocation) {
+                statusEl.innerHTML = "❌ Geolocalização não suportada no seu navegador.";
+                statusEl.style.color = "red";
+                checkinBtn.disabled = false;
+                checkoutBtn.disabled = false;
+                checkinBtn.classList.remove('disabled');
+                checkoutBtn.classList.remove('disabled');
+                return;
+            }
+
+            // Obtém a geolocalização atual
+            navigator.geolocation.getCurrentPosition(async function(pos) {
+                // Prepara os dados para o WebApp como JSON
+                const data = {
+                    nome: nome,
+                    cliente: cliente,
+                    tipo: tipo,
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude
+                };
+
+                statusEl.innerHTML = "⏳ Enviando registro...";
+                statusEl.style.color = ""; // Reseta a cor
+
+                try {
+                    // Envia os dados para o WebApp do Google Apps Script
+                    const response = await fetch(WEBAPP_URL, {
+                        method: "POST",
+                        // CONTEÚDO ALTERADO: Converte dados para JSON
+                        body: JSON.stringify(data), 
+                        // CONTEÚDO ALTERADO: Define o cabeçalho Content-Type para JSON
+                        headers: { "Content-Type": "application/json" },
+                        // O modo 'cors' é o padrão e geralmente correto para chamadas cross-origin
+                        mode: "cors" 
+                    });
+
+                    const text = await response.text();
+                    try {
+                        // Tenta analisar a resposta como JSON
+                        const resp = JSON.parse(text);
+                        if (resp.status === "success") {
+                            statusEl.innerHTML = `✅ Registro enviado com sucesso!<br>Latitude: ${data.latitude}<br>Longitude: ${data.longitude}`;
+                            statusEl.style.color = "green";
+                            console.log("Resposta do WebApp:", resp);
+                        } else {
+                            statusEl.innerHTML = `❌ Erro do WebApp: ${resp.message}`;
+                            statusEl.style.color = "red";
+                            console.error("Erro retornado pelo WebApp:", resp);
+                        }
+                    } catch (parseErr) {
+                        // Lida com casos em que a resposta não é um JSON válido
+                        statusEl.innerHTML = `❌ Resposta inesperada do servidor (não JSON): ${text}`;
+                        statusEl.style.color = "red";
+                        console.error("Erro inesperado (não JSON):", text);
+                    }
+
+                } catch (fetchErr) {
+                    // Lida com erros de rede ou problemas com a própria requisição fetch
+                    statusEl.innerHTML = `❌ Erro ao enviar registro: ${fetchErr.message}<br>Verifique a URL do WebApp e o deploy.`;
+                    statusEl.style.color = "red";
+                    console.error("Erro ao enviar para o WebApp:", fetchErr);
+                } finally {
+                    // Reativa os botões e remove a classe 'disabled'
+                    checkinBtn.disabled = false;
+                    checkoutBtn.disabled = false;
+                    checkinBtn.classList.remove('disabled');
+                    checkoutBtn.classList.remove('disabled');
+                }
+
+            }, function(err) {
+                // Lida com erros de geolocalização (ex: usuário negou acesso à localização)
+                statusEl.innerHTML = `❌ Erro ao capturar localização: ${err.message}. Por favor, permita o acesso à localização.`;
+                statusEl.style.color = "red";
+                console.error("Erro de geolocalização:", err);
+                checkinBtn.disabled = false;
+                checkoutBtn.disabled = false;
+                checkinBtn.classList.remove('disabled');
+                checkoutBtn.classList.remove('disabled');
+            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }); // Opções de geolocalização
         }
-
-      }, function(err){
-        statusEl.innerHTML=`❌ Erro ao capturar localização: ${err.message}`;
-        statusEl.style.color="red";
-        console.error("Erro de geolocalização:", err);
-        checkinBtn.disabled=false;
-        checkoutBtn.disabled=false;
-      }, { enableHighAccuracy:true, timeout:10000, maximumAge:0 });
-    }
-  </script>
+    </script>
 </body>
 </html>
-
-
