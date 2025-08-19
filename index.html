@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Abrir Web App</title>
+  <title>Abrindo Web App...</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -16,8 +16,9 @@
       background: #f0f8ff;
       color: #333;
       text-align: center;
+      cursor: pointer;
     }
-    a.button {
+    .button {
       display: inline-block;
       padding: 12px 24px;
       margin-top: 20px;
@@ -28,20 +29,34 @@
       border-radius: 6px;
       transition: background-color 0.3s;
     }
-    a.button:hover {
+    .button:hover {
       background-color: #1669c1;
     }
   </style>
 </head>
-<body>
-  <h1>Bem-vindo!</h1>
-  <p>Clique no botão abaixo para abrir o Web App do Google:</p>
+<body id="body">
+  <h1>Abrindo Web App...</h1>
+  <p>Clique em qualquer lugar se não abrir automaticamente.</p>
   <a class="button" href="https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec" target="_blank" rel="noopener noreferrer">
     Abrir Web App
   </a>
-  <p>Se o botão não funcionar, copie e cole este link no navegador:</p>
-  <p><a href="https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec" target="_blank" rel="noopener noreferrer">
-    https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec
-  </a></p>
+
+  <script>
+    const webAppURL = "https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec";
+
+    function openWebApp() {
+      const newWindow = window.open(webAppURL, "_blank");
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        // Pop-up bloqueado, mostra botão
+        document.querySelector('.button').style.display = 'inline-block';
+      }
+    }
+
+    // Tenta abrir automaticamente após 1 segundo
+    setTimeout(openWebApp, 1000);
+
+    // Também permite abrir ao clicar na tela (iOS-friendly)
+    document.getElementById('body').addEventListener('click', openWebApp);
+  </script>
 </body>
 </html>
