@@ -19,7 +19,7 @@
     button.checkout{background:#dc3545;}
     button:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
     button.disabled{opacity:0.6;cursor:not-allowed;}
-    #status{margin-top:20px;font-weight:600;word-break:break-word;}
+    #status{margin-top:20px;font-weight:600;word-break:break-word;line-height:1.4;}
     footer{margin-top:25px;font-size:12px;color:#555;text-align:center;word-break:break-all;}
     @media(max-width:400px){.options{flex-direction:column;}}
   </style>
@@ -38,7 +38,7 @@
     <p id="status"></p>
   </div>
 
-  <footer>🌐 WebApp: https://script.google.com/macros/s/SEU_WEBAPP/exec</footer>
+  <footer>🌐 WebsssApp: https://script.google.com/macros/s/SEU_WEBAPP/exec</footer>
 
   <script>
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec";
@@ -49,20 +49,19 @@
     function enviar(tipo){
       const nome = document.getElementById("nome").value.trim();
       const cliente = document.getElementById("cliente").value.trim();
-
-      if(!nome || !cliente){
-        alert("Preencha Nome e Cliente antes de continuar.");
-        return;
+      if(!nome || !cliente){ 
+        alert("Preencha Nome e Cliente antes de continuar."); 
+        return; 
       }
 
       checkinBtn.disabled = true;
       checkoutBtn.disabled = true;
 
-      if(!navigator.geolocation){
-        alert("Geolocalização não suportada.");
-        checkinBtn.disabled = false;
-        checkoutBtn.disabled = false;
-        return;
+      if(!navigator.geolocation){ 
+        alert("Geolocalização não suportada."); 
+        checkinBtn.disabled=false; 
+        checkoutBtn.disabled=false; 
+        return; 
       }
 
       navigator.geolocation.getCurrentPosition(function(pos){
@@ -74,46 +73,50 @@
           longitude: pos.coords.longitude
         };
 
+        statusEl.innerText = "⏳ Enviando registro...";
+        statusEl.style.color = "#333";
+
         fetch(WEBAPP_URL, {
           method: "POST",
           body: JSON.stringify(data),
           headers: { "Content-Type": "application/json" }
         })
         .then(async response => {
-          const text = await response.text(); // sempre pega o retorno
+          const text = await response.text();
           try {
             const resp = JSON.parse(text);
-            if(resp.status === "success"){
-              statusEl.innerText = "✅ Registro enviado com sucesso!";
-              statusEl.style.color = "green";
+
+            if(resp.status==="success"){
+              statusEl.innerHTML = `✅ Registro enviado com sucesso!<br>Latitude: ${data.latitude}<br>Longitude: ${data.longitude}`;
+              statusEl.style.color="green";
               console.log("Resposta do WebApp:", resp);
             } else {
-              statusEl.innerText = "❌ Erro do WebApp: " + resp.message;
-              statusEl.style.color = "red";
+              statusEl.innerHTML = `❌ Erro do WebApp: ${resp.message}`;
+              statusEl.style.color="red";
               console.error("Erro retornado pelo WebApp:", resp);
             }
-          } catch(err) {
-            statusEl.innerText = "❌ Erro inesperado: " + text;
-            statusEl.style.color = "red";
+          } catch(err){
+            statusEl.innerHTML = `❌ Erro inesperado: ${text}`;
+            statusEl.style.color="red";
             console.error("Erro inesperado (não JSON):", text);
           }
         })
-        .catch(err => {
-          statusEl.innerText = "❌ Erro ao enviar: " + err.message;
-          statusEl.style.color = "red";
+        .catch(err=>{
+          statusEl.innerHTML = `❌ Erro ao enviar: ${err.message}`;
+          statusEl.style.color="red";
           console.error("Erro ao enviar para o WebApp:", err);
         })
-        .finally(() => {
-          checkinBtn.disabled = false;
-          checkoutBtn.disabled = false;
+        .finally(()=>{ 
+          checkinBtn.disabled=false; 
+          checkoutBtn.disabled=false; 
         });
 
       }, function(err){
-        statusEl.innerText = "❌ Erro ao capturar localização: " + err.message;
-        statusEl.style.color = "red";
+        statusEl.innerHTML=`❌ Erro ao capturar localização: ${err.message}`;
+        statusEl.style.color="red";
         console.error("Erro de geolocalização:", err);
-        checkinBtn.disabled = false;
-        checkoutBtn.disabled = false;
+        checkinBtn.disabled=false;
+        checkoutBtn.disabled=false;
       }, { enableHighAccuracy:true, timeout:10000, maximumAge:0 });
     }
   </script>
