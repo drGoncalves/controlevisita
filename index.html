@@ -6,110 +6,24 @@
   <title>Check-In / Check-Out</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      color: #333;
-    }
-
-    .container {
-      background: #fff;
-      padding: 30px 40px;
-      border-radius: 20px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-
-    h2 {
-      margin-bottom: 25px;
-      color: #2575fc;
-    }
-
-    label {
-      display: block;
-      text-align: left;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 12px 15px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      transition: all 0.3s ease;
-    }
-
-    input[type="text"]:focus {
-      border-color: #2575fc;
-      outline: none;
-      box-shadow: 0 0 8px rgba(37, 117, 252, 0.3);
-    }
-
-    .options {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-    }
-
-    button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: #fff;
-    }
-
-    button.checkin {
-      background: #28a745;
-    }
-
-    button.checkout {
-      background: #dc3545;
-    }
-
-    button:hover:not(.disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    button:active:not(.disabled) {
-      transform: translateY(1px);
-      box-shadow: none;
-    }
-
-    button.disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    #status {
-      margin-top: 20px;
-      font-weight: 600;
-    }
-
-    @media (max-width: 400px) {
-      .options {
-        flex-direction: column;
-      }
-    }
+    /* MESMO ESTILO DA VERSÃO ANTERIOR */
+    * { box-sizing: border-box; margin:0; padding:0; font-family:'Inter',sans-serif;}
+    body { min-height:100vh; display:flex; justify-content:center; align-items:center; background: linear-gradient(135deg,#6a11cb,#2575fc); color:#333; padding:20px;}
+    .container { background:#fff; padding:30px 40px; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.2); max-width:400px; width:100%; text-align:center;}
+    h2 { margin-bottom:25px; color:#2575fc;}
+    label { display:block; text-align:left; margin-bottom:5px; font-weight:600;}
+    input[type="text"] { width:100%; padding:12px 15px; margin-bottom:20px; border-radius:10px; border:1px solid #ccc; transition:all 0.3s ease;}
+    input[type="text"]:focus { border-color:#2575fc; outline:none; box-shadow:0 0 8px rgba(37,117,252,0.3);}
+    .options { display:flex; justify-content:space-between; gap:15px;}
+    button { flex:1; padding:12px; border:none; border-radius:12px; font-weight:600; font-size:16px; cursor:pointer; transition:all 0.3s ease; color:#fff;}
+    button.checkin { background:#28a745;}
+    button.checkout { background:#dc3545;}
+    button:hover:not(.disabled){ transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+    button:active:not(.disabled){ transform:translateY(1px); box-shadow:none;}
+    button.disabled{ opacity:0.6; cursor:not-allowed;}
+    #status{ margin-top:20px; font-weight:600;}
+    footer{ margin-top:25px; font-size:12px; color:#555; text-align:center; word-break:break-all;}
+    @media(max-width:400px){ .options{ flex-direction:column;}}
   </style>
 </head>
 <body>
@@ -118,10 +32,8 @@
     <form id="checkForm">
       <label>Nome:</label>
       <input type="text" id="nome" placeholder="Seu nome" required>
-
       <label>Cliente:</label>
       <input type="text" id="cliente" placeholder="Nome do cliente" required>
-
       <div class="options">
         <button type="button" class="checkin" onclick="enviarRegistro('Check-In')">Check-In</button>
         <button type="button" class="checkout" onclick="enviarRegistro('Check-Out')">Check-Out</button>
@@ -130,17 +42,23 @@
     <p id="status"></p>
   </div>
 
+  <footer>
+    🌐 WebApp: <span id="webapp-url"></span>
+  </footer>
+
   <script>
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec";
     const checkinBtn = document.querySelector(".checkin");
     const checkoutBtn = document.querySelector(".checkout");
     const statusEl = document.getElementById("status");
+    const webappEl = document.getElementById("webapp-url");
+    webappEl.innerText = WEBAPP_URL;
 
-    function enviarRegistro(tipo) {
+    function enviarRegistro(tipo){
       const nome = document.getElementById("nome").value.trim();
       const cliente = document.getElementById("cliente").value.trim();
 
-      if (!nome || !cliente) {
+      if(!nome || !cliente){
         alert("Preencha Nome e Cliente antes de continuar.");
         return;
       }
@@ -149,66 +67,64 @@
       checkoutBtn.disabled = true;
       checkinBtn.classList.add("disabled");
       checkoutBtn.classList.add("disabled");
-      checkinBtn.innerText = "Enviando...";
-      checkoutBtn.innerText = "Enviando...";
+      checkinBtn.innerText="Enviando...";
+      checkoutBtn.innerText="Enviando...";
 
-      if (!navigator.geolocation) {
+      if(!navigator.geolocation){
         alert("Geolocalização não suportada.");
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        function(pos) {
-          const data = {
-            nome: nome,
-            cliente: cliente,
-            tipo: tipo,
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude
-          };
+      navigator.geolocation.getCurrentPosition(function(pos){
+        const data = {
+          nome:nome,
+          cliente:cliente,
+          tipo:tipo,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude
+        };
 
-          fetch(WEBAPP_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-          })
-          .then(response => response.json())
-          .then(resp => {
-            statusEl.innerText = "✅ Registro enviado com sucesso!";
-            statusEl.style.color = "green";
-            checkinBtn.innerText = "Check-In";
-            checkoutBtn.innerText = "Check-Out";
-          })
-          .catch(err => {
-            statusEl.innerText = "❌ Erro ao enviar: " + err.message;
-            statusEl.style.color = "red";
-            checkinBtn.disabled = false;
-            checkoutBtn.disabled = false;
-            checkinBtn.classList.remove("disabled");
-            checkoutBtn.classList.remove("disabled");
-            checkinBtn.innerText = "Check-In";
-            checkoutBtn.innerText = "Check-Out";
-          });
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", WEBAPP_URL, true);
+        xhr.setRequestHeader("Content-Type","application/json;charset=UTF-8");
 
-        },
-        function(err) {
-          statusEl.innerText = "❌ Erro ao capturar localização: " + err.message;
-          statusEl.style.color = "red";
-          checkinBtn.disabled = false;
-          checkoutBtn.disabled = false;
-          checkinBtn.classList.remove("disabled");
-          checkoutBtn.classList.remove("disabled");
-          checkinBtn.innerText = "Check-In";
-          checkoutBtn.innerText = "Check-Out";
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      );
+        xhr.onreadystatechange = function(){
+          if(xhr.readyState===4){
+            if(xhr.status===200){
+              statusEl.innerText="✅ Registro enviado com sucesso!";
+              statusEl.style.color="green";
+              checkinBtn.innerText="Check-In";
+              checkoutBtn.innerText="Check-Out";
+            } else {
+              statusEl.innerText="❌ Erro ao enviar: "+xhr.statusText;
+              statusEl.style.color="red";
+              checkinBtn.disabled=false;
+              checkoutBtn.disabled=false;
+              checkinBtn.classList.remove("disabled");
+              checkoutBtn.classList.remove("disabled");
+              checkinBtn.innerText="Check-In";
+              checkoutBtn.innerText="Check-Out";
+            }
+          }
+        };
+
+        xhr.send(JSON.stringify(data));
+
+      }, function(err){
+        statusEl.innerText="❌ Erro ao capturar localização: "+err.message;
+        statusEl.style.color="red";
+        checkinBtn.disabled=false;
+        checkoutBtn.disabled=false;
+        checkinBtn.classList.remove("disabled");
+        checkoutBtn.classList.remove("disabled");
+        checkinBtn.innerText="Check-In";
+        checkoutBtn.innerText="Check-Out";
+      },{
+        enableHighAccuracy:true,
+        timeout:10000,
+        maximumAge:0
+      });
     }
   </script>
 </body>
 </html>
-
