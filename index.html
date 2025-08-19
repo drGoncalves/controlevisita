@@ -7,63 +7,109 @@
 <style>
   body {
     font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #6dd5fa, #ffffff);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: #f0f4f8;
+    justify-content: flex-start;
+    min-height: 100vh;
   }
-  h1 {
-    margin-bottom: 30px;
-    color: #333;
+
+  header {
+    width: 100%;
+    padding: 20px;
+    background: #007bff;
+    color: white;
+    text-align: center;
+    font-size: 1.8em;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
+
+  main {
+    margin-top: 40px;
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   input {
-    padding: 10px;
-    width: 250px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  button {
-    padding: 12px 30px;
-    margin: 5px;
-    border: none;
-    border-radius: 8px;
+    width: 100%;
+    padding: 12px;
     font-size: 16px;
-    cursor: pointer;
-    color: #fff;
-    transition: background 0.3s;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
+
+  .card {
+    width: 100%;
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+
   #checkin {
     background: #28a745;
+    color: white;
   }
-  #checkin:hover {
-    background: #218838;
-  }
+
   #checkout {
     background: #dc3545;
+    color: white;
   }
-  #checkout:hover {
-    background: #c82333;
+
+  .icon {
+    margin-right: 12px;
+    font-size: 24px;
   }
+
   #status {
     margin-top: 20px;
     font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
   }
 </style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<h1>Registro de Presença</h1>
 
-<input type="text" id="nome" placeholder="Digite seu nome" required>
+<header>Registro de Presença</header>
 
-<div>
-  <button id="checkin">Check-in</button>
-  <button id="checkout">Check-out</button>
-</div>
+<main>
+  <input type="text" id="nome" placeholder="Digite seu nome" required>
 
-<p id="status"></p>
+  <div class="card" id="checkin">
+    <i class="fas fa-sign-in-alt icon"></i>Check-in
+  </div>
+
+  <div class="card" id="checkout">
+    <i class="fas fa-sign-out-alt icon"></i>Check-out
+  </div>
+
+  <p id="status"></p>
+</main>
 
 <script>
 const url = "https://script.google.com/macros/s/AKfycbzinOqCVG_QfCC3AEaxjR9-5NjIiv1pXd9uY4Sv4tG5cIGrxJ16OQuqNH7esub5wL2N/exec";
@@ -83,7 +129,7 @@ function enviarDados(tipo) {
   navigator.geolocation.getCurrentPosition((pos) => {
     const data = {
       nome,
-      tipo, // "Check-in" ou "Check-out"
+      tipo,
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude
     };
@@ -105,5 +151,6 @@ function enviarDados(tipo) {
 document.getElementById('checkin').addEventListener('click', () => enviarDados("Check-in"));
 document.getElementById('checkout').addEventListener('click', () => enviarDados("Check-out"));
 </script>
+
 </body>
 </html>
