@@ -2,59 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Check-in / Check-out</title>
+  <title>Redirecionando...</title>
+  <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbwdEbJi0gvW1WMaaBUo37IN8cgh3lcsEnn98aIfs4RwEPtTBCfQhvZ9CYRiOVU8xLIQ5g/exec" />
 </head>
 <body>
-  <h2>Registro de Ponto(v1)</h2>
-  <form id="checkForm">
-    <label>Nome: <input type="text" name="nome" required></label><br><br>
-    <label>Cliente: <input type="text" name="cliente" required></label><br><br>
-    <label>
-      <input type="radio" name="tipo" value="Check-In" required> Check-In
-    </label>
-    <label>
-      <input type="radio" name="tipo" value="Check-Out" required> Check-Out
-    </label><br><br>
-    <button type="submit" id="btnEnviar">Enviar</button>
-  </form>
-
-  <p id="status"></p>
-
-  <script>
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbxuy6zM1fqVjt2DQ2gc1zlNKEycy2DTmaTCu6lgu2mghHlxrSx192Mg9KCTqDE9wroHvg/exec";
-
-    document.getElementById("checkForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const btn = document.getElementById("btnEnviar");
-      btn.disabled = true;
-      btn.innerText = "Enviando...";
-
-      navigator.geolocation.getCurrentPosition(pos => {
-        const data = {
-          nome: this.nome.value,
-          cliente: this.cliente.value,
-          tipo: this.tipo.value,
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude
-        };
-
-        fetch(webAppUrl, {
-          method: "POST",
-          mode: "no-cors", // evita erro CORS
-          body: JSON.stringify(data)
-        })
-        .then(() => {
-          document.getElementById("status").innerText = "✅ Registro enviado!";
-        })
-        .catch(err => {
-          document.getElementById("status").innerText = "❌ Erro: " + err;
-        });
-      }, err => {
-        document.getElementById("status").innerText = "Erro ao pegar localização.";
-        btn.disabled = false;
-        btn.innerText = "Enviar";
-      });
-    });
-  </script>
+  <p>Redirecionando para o Web App...</p>
+  <p><a href="https://script.google.com/macros/s/AKfycbwdEbJi0gvW1WMaaBUo37IN8cgh3lcsEnn98aIfs4RwEPtTBCfQhvZ9CYRiOVU8xLIQ5g/exec">Clique aqui se não redirecionar</a></p>
 </body>
 </html>
