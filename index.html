@@ -18,6 +18,7 @@
     button.checkin { background:#28a745;}
     button.checkout { background:#dc3545;}
     button:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+    #status{ margin-top:20px; font-weight:600;}
     footer{ margin-top:25px; font-size:12px; color:#555; text-align:center; word-break:break-all;}
     @media(max-width:400px){ .options{ flex-direction:column;}}
   </style>
@@ -26,8 +27,7 @@
   <div class="container">
     <h2>📍 Registro de Ponto</h2>
 
-    <!-- Formulário que envia direto para o WebApp -->
-    <form id="checkForm" action="https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec" method="post" target="_blank">
+    <form id="checkForm" method="post">
       <label>Nome:</label>
       <input type="text" name="nome" placeholder="Seu nome" required>
 
@@ -35,19 +35,26 @@
       <input type="text" name="cliente" placeholder="Nome do cliente" required>
 
       <input type="hidden" name="tipo" id="tipo">
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
 
       <div class="options">
         <button type="button" onclick="enviar('Check-In')">Check-In</button>
         <button type="button" onclick="enviar('Check-Out')">Check-Out</button>
       </div>
     </form>
+
+    <p id="status"></p>
   </div>
 
   <footer>
-    🌐 WebApp: https://script.google.com/macros/s/AKfycbzZPYJ_uRVcIxQ4xaYpKynKYEkvT5F8nOFgtEgQpoShZonGyt2WIWVC682g5gwT8PfQmg/exec
+    🌐 WebApp: https://script.google.com/macros/s/SEU_WEBAPP/exec
   </footer>
 
   <script>
+    const WEBAPP_URL = "https://script.google.com/macros/s/SEU_WEBAPP/exec";
+    const statusEl = document.getElementById("status");
+
     function enviar(tipo) {
       const nome = document.querySelector('input[name="nome"]').value.trim();
       const cliente = document.querySelector('input[name="cliente"]').value.trim();
@@ -63,34 +70,35 @@
       }
 
       navigator.geolocation.getCurrentPosition(function(pos){
-        // Preenche os campos ocultos
         document.getElementById("tipo").value = tipo;
+        document.getElementById("latitude").value = pos.coords.latitude;
+        document.getElementById("longitude").value = pos.coords.longitude;
 
-        // Adiciona latitude e longitude como inputs ocultos
-        let latInput = document.querySelector('input[name="latitude"]');
-        let lngInput = document.querySelector('input[name="longitude"]');
+        const formData = new FormData(document.getElementById("checkForm"));
 
-        if (!latInput) {
-          latInput = document.createElement('input');
-          latInput.type = 'hidden';
-          latInput.name = 'latitude';
-          document.getElementById("checkForm").appendChild(latInput);
-        }
-        if (!lngInput) {
-          lngInput = document.createElement('input');
-          lngInput.type = 'hidden';
-          lngInput.name = 'longitude';
-          document.getElementById("checkForm").appendChild(lngInput);
-        }
-
-        latInput.value = pos.coords.latitude;
-        lngInput.value = pos.coords.longitude;
-
-        // Envia o formulário
-        document.getElementById("checkForm").submit();
+        fetch(WEBAPP_URL, {
+          method: "POST",
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) throw new Error(response.statusText);
+          return response.text();
+        })
+        .then(data => {
+          statusEl.innerText = "✅ Registro enviado com sucesso!";
+          statusEl.style.color = "green";
+          console.log("Resposta do WebApp:", data);
+        })
+        .catch(err => {
+          statusEl.innerText = "❌ Erro ao enviar!";
+          statusEl.style.color = "red";
+          console.error("Erro ao enviar para o WebApp:", err);
+        });
 
       }, function(err){
-        alert("Erro ao capturar localização: " + err.message);
+        statusEl.innerText = "❌ Erro ao capturar localização!";
+        statusEl.style.color = "red";
+        console.error("Erro de geolocalização:", err);
       }, {
         enableHighAccuracy: true,
         timeout: 10000,
