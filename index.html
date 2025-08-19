@@ -3,26 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enviar Dados</title>
+<title>Check-in / Check-out</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #f0f4f8;
+  }
+  h1 {
+    margin-bottom: 30px;
+    color: #333;
+  }
+  input {
+    padding: 10px;
+    width: 250px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  button {
+    padding: 12px 30px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #fff;
+    transition: background 0.3s;
+  }
+  #checkin {
+    background: #28a745;
+  }
+  #checkin:hover {
+    background: #218838;
+  }
+  #checkout {
+    background: #dc3545;
+  }
+  #checkout:hover {
+    background: #c82333;
+  }
+  #status {
+    margin-top: 20px;
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
-<h1>Enviar Dados para Google Sheets</h1>
+<h1>Registro de Presença</h1>
 
-<form id="form">
-  <input type="text" id="nome" placeholder="Nome" required><br><br>
-  <input type="text" id="cliente" placeholder="Cliente" required><br><br>
-  <button type="submit">Enviar Localização</button>
-</form>
+<input type="text" id="nome" placeholder="Digite seu nome" required>
+
+<div>
+  <button id="checkin">Check-in</button>
+  <button id="checkout">Check-out</button>
+</div>
 
 <p id="status"></p>
 
 <script>
 const url = "https://script.google.com/macros/s/AKfycbzinOqCVG_QfCC3AEaxjR9-5NjIiv1pXd9uY4Sv4tG5cIGrxJ16OQuqNH7esub5wL2N/exec";
 
-document.getElementById('form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const nome = document.getElementById('nome').value;
-  const cliente = document.getElementById('cliente').value;
+function enviarDados(tipo) {
+  const nome = document.getElementById('nome').value.trim();
+  if (!nome) {
+    document.getElementById('status').innerText = "Por favor, digite seu nome.";
+    return;
+  }
 
   if (!navigator.geolocation) {
     document.getElementById('status').innerText = "Geolocalização não suportada.";
@@ -32,7 +83,7 @@ document.getElementById('form').addEventListener('submit', function(e) {
   navigator.geolocation.getCurrentPosition((pos) => {
     const data = {
       nome,
-      cliente,
+      tipo, // "Check-in" ou "Check-out"
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude
     };
@@ -43,13 +94,16 @@ document.getElementById('form').addEventListener('submit', function(e) {
     })
     .then(res => res.json())
     .then(res => {
-      document.getElementById('status').innerText = res.status === "sucesso" ? "Enviado com sucesso!" : "Erro: " + res.message;
+      document.getElementById('status').innerText = res.status === "sucesso" ? `${tipo} registrado com sucesso!` : "Erro: " + res.message;
     })
     .catch(err => document.getElementById('status').innerText = "Erro ao enviar: " + err);
   }, (err) => {
     document.getElementById('status').innerText = "Erro ao obter localização: " + err.message;
   });
-});
+}
+
+document.getElementById('checkin').addEventListener('click', () => enviarDados("Check-in"));
+document.getElementById('checkout').addEventListener('click', () => enviarDados("Check-out"));
 </script>
 </body>
 </html>
