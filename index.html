@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Check-in / Check-out</title>
+
+<!-- Manifest PWA -->
+<link rel="manifest" href="manifest.json">
+
 <style>
   body {
     font-family: 'Arial', sans-serif;
@@ -91,8 +95,24 @@
     text-align: center;
   }
 </style>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<!-- Service Worker PWA -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('sw.js')
+      .then(function(registration) {
+        console.log('ServiceWorker registrado com sucesso:', registration.scope);
+      }, function(err) {
+        console.log('ServiceWorker falhou:', err);
+      });
+    });
+  }
+</script>
 </head>
+
 <body>
 
 <header>Registro de Visita:</header>
@@ -133,7 +153,7 @@ function enviarDados(tipo) {
     const data = {
       nome,
       cliente,
-      tipo,       // Check-in ou Check-out
+      tipo,
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude
     };
@@ -158,5 +178,3 @@ document.getElementById('checkout').addEventListener('click', () => enviarDados(
 
 </body>
 </html>
-
-
