@@ -1,13 +1,21 @@
-<link rel="manifest" href="manifest.json">
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('sw.js')
-      .then(function(registration) {
-        console.log('ServiceWorker registrado com sucesso:', registration.scope);
-      }, function(err) {
-        console.log('ServiceWorker falhou:', err);
-      });
-    });
-  }
-</script>
+const CACHE_NAME = "checkin-cache-v1";
+const urlsToCache = [
+  "./index.html",
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
